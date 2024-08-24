@@ -12,6 +12,10 @@ var rootCmd = &cobra.Command{
 	RunE:  root,
 }
 
+func init() {
+	rootCmd.AddCommand(configCmd)
+}
+
 func Execute() {
 	rootCmd.Execute()
 }
