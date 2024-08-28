@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"os/exec"
 
 	"github.com/spf13/cobra"
 )
@@ -23,4 +24,9 @@ func Execute() {
 func root(cmd *cobra.Command, args []string) error {
 	fmt.Println("Hello, Warp!")
 	return nil
+}
+
+// fixGoImports fixes the imports in the file
+func fixGoImports(path string) error {
+	return exec.Command("goimports", "-w", path).Run()
 }
