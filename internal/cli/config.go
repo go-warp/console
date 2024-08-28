@@ -45,7 +45,7 @@ var configCmd = &cobra.Command{
 			v, err := readConfigVar()
 
 			if err != nil {
-				if err.Error() == "empty name" {
+				if err.Error() == "empty name" { // TODO: check with error variable
 					break
 				}
 				output.PrintError(err.Error())
@@ -95,16 +95,12 @@ func isEnvTypeValid(envType string) bool {
 }
 
 func processVars(vars []configVar) error {
-	err := makeEnvFile(vars)
-	if err != nil {
+	if err := makeEnvFile(vars); err != nil {
 		return err
 	}
-
-	fmt.Printf(
-		"\n%s Config file has been placed by %s\n",
-		colorize.Green("OK!"),
-		colorize.Cyan(pathToEnvFile),
-	)
+	if err := makeGoConfigFile(vars); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -113,11 +109,6 @@ func processVars(vars []configVar) error {
 func makeEnvFile(vars []configVar) error {
 	sb := strings.Builder{}
 	for _, v := range vars {
-		fmt.Printf(
-			"  - Name: %s, Type: %s\n",
-			colorize.Yellow(v.Name), colorize.Cyan(v.Type),
-		)
-
 		s := fmt.Sprintf("%s=%v\n", strings.ToUpper(v.Name), v.Value)
 		sb.WriteString(s)
 	}
@@ -128,8 +119,46 @@ func makeEnvFile(vars []configVar) error {
 	}
 
 	fmt.Printf(
-		"\n%s Config file has been created\n",
+		"\n%s Config file has been placed by %s\n",
 		colorize.Green("OK!"),
+		colorize.Cyan(pathToEnvFile),
+	)
+	return nil
+}
+
+// makeGoConfigFile creates the config.go file with the specified variables
+func makeGoConfigFile(vars []configVar) error {
+	sb := strings.Builder{}
+
+	sb.WriteString("package config\n\n")
+
+	sb.WriteString("import (\n")
+	sb.WriteString("\t\"os\"\n")
+	sb.WriteString("\t\"strconv\"\n")
+	sb.WriteString(")\n\n")
+
+	sb.WriteString("var (\n")
+	for _, v := range vars {
+		switch v.Type {
+		case "string":
+			sb.WriteString(fmt.Sprintf("\t%s = os.Getenv(\"%s\")\n", v.Name, strings.ToUpper(v.Name)))
+		case "int":
+			sb.WriteString(fmt.Sprintf("\t%s, _ = strconv.Atoi(os.Getenv(\"%s\"))\n", v.Name, strings.ToUpper(v.Name)))
+		case "bool":
+			sb.WriteString(fmt.Sprintf("\t%s, _ = strconv.ParseBool(os.Getenv(\"%s\"))\n", v.Name, strings.ToUpper(v.Name)))
+		}
+	}
+	sb.WriteString(")\n")
+
+	err := output.MakeFile("config.go", []byte(sb.String()))
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf(
+		"\n%s Config file has been placed by %s\n",
+		colorize.Green("OK!"),
+		colorize.Cyan("config.go"),
 	)
 	return nil
 }
