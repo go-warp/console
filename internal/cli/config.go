@@ -20,6 +20,11 @@ const (
 	pathToConfigFile = "config.go"
 )
 
+var (
+	errConfigVarEmptyName   = errors.New("empty config var name")
+	errConfigVarInvalidType = errors.New("invalid config var type")
+)
+
 // configVar is a struct that represents a config variable
 type configVar struct {
 	Name    string      // Name of the config variable thar will be used in the code
@@ -46,9 +51,8 @@ var configCmd = &cobra.Command{
 
 		for {
 			v, err := readConfigVar()
-
 			if err != nil {
-				if err.Error() == "empty name" { // TODO: check with error variable
+				if errors.Is(err, errConfigVarEmptyName) { // TODO: check with error variable
 					break
 				}
 				output.PrintError(err.Error())
@@ -68,13 +72,13 @@ func readConfigVar() (configVar, error) {
 	question := "Specify the variable name: "
 	name := input.ReadString(question)
 	if name == "" {
-		return configVar{}, errors.New("empty name")
+		return configVar{}, errConfigVarEmptyName
 	}
 
 	question = fmt.Sprintf("Specify the env type %s:", colorize.Red("[string, int, bool]"))
 	envType := input.ReadString(question)
 	if !isEnvTypeValid(envType) {
-		return configVar{}, errors.New("invalid env type")
+		return configVar{}, errConfigVarInvalidType
 	}
 
 	question = "If you need, specify the inital value:"
@@ -111,19 +115,21 @@ func processVars(vars []configVar) error {
 // makeEnvFile creates the .env file with the specified variables
 func makeEnvFile(vars []configVar) error {
 	sb := strings.Builder{}
+
+	// Add the variables
 	for _, v := range vars {
 		s := fmt.Sprintf("%s=%v\n", strings.ToUpper(v.Name), v.Value)
 		sb.WriteString(s)
 	}
 
+	// Create the file
 	err := output.MakeFile(pathToEnvFile, []byte(sb.String()))
 	if err != nil {
 		return err
 	}
 
 	fmt.Printf(
-		"\n%s Config file has been placed by %s\n",
-		colorize.Green("OK!"),
+		"Created file %s\n",
 		colorize.Cyan(pathToEnvFile),
 	)
 	return nil
@@ -132,6 +138,9 @@ func makeEnvFile(vars []configVar) error {
 // makeGoConfigFile creates the config.go file with the specified variables
 func makeGoConfigFile(vars []configVar) error {
 	sb := strings.Builder{}
+
+	// Set the disclaimer
+	sb.WriteString(disclaimer())
 
 	// Package
 	sb.WriteString("package config\n\n")
@@ -188,13 +197,13 @@ func makeGoConfigFile(vars []configVar) error {
 	// Getters
 	for _, v := range vars {
 		s := fmt.Sprintf(
-			"\n// Get%s returns the %s value\n",
+			"\n// %s returns the %s value\n",
 			stringsHelper.ToPascalCase(v.Name), v.Name,
 		)
 		sb.WriteString(s)
 
 		s = fmt.Sprintf(
-			"func (c *Config) Get%s() %s {\n\treturn c.%s\n}\n",
+			"func (c *Config) %s() %s {\n\treturn c.%s\n}\n",
 			stringsHelper.ToPascalCase(v.Name), v.Type, stringsHelper.ToCamelCase(v.Name),
 		)
 		sb.WriteString(s)
@@ -207,8 +216,7 @@ func makeGoConfigFile(vars []configVar) error {
 	}
 
 	fmt.Printf(
-		"\n%s Config file has been placed by %s\n",
-		colorize.Green("OK!"),
+		"Created file %s\n",
 		colorize.Cyan(pathToConfigFile),
 	)
 
