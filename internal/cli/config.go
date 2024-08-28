@@ -13,8 +13,9 @@ import (
 
 // configVar is a struct that represents a config variable
 type configVar struct {
-	Name string // Name of the config variable
-	Type string // Type of the config variable
+	Name  string      // Name of the config variable
+	Type  string      // Type of the config variable
+	Value interface{} // Current value of the config variable
 }
 
 var configCmd = &cobra.Command{
@@ -69,7 +70,14 @@ func readConfigVar() (configVar, error) {
 		return configVar{}, errors.New("invalid env type")
 	}
 
-	return configVar{Name: name, Type: envType}, nil
+	question = "If you need, specify the inital value:"
+	value := input.ReadString(question)
+
+	return configVar{
+		Name:  name,
+		Type:  envType,
+		Value: value,
+	}, nil
 }
 
 func isEnvTypeValid(envType string) bool {
