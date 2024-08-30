@@ -42,38 +42,40 @@ type configVar struct {
 	Value   interface{} // Current value of the config variable
 }
 
-// Cmd is a command that is used to configure the Warp
-var Cmd = &cobra.Command{
-	Use:   "make:config",
-	Short: "Make an env config file and its Go representation for the project.",
-	RunE: func(cmd *cobra.Command, args []string) error {
+// NewCommand creates a command that is used to configure the Warp
+func NewCommand() *cobra.Command {
+	return &cobra.Command{
+		Use:   "make:config",
+		Short: "Make an env config file and its Go representation for the project.",
+		RunE: func(cmd *cobra.Command, args []string) error {
 
-		vars := []configVar{}
-		defer func() {
-			if len(vars) == 0 {
-				output.PrintError("No variables have been added")
-				return
-			}
-
-			makeConfig(vars)
-		}()
-
-		for {
-			v, err := readConfigVar()
-			if err != nil {
-				if errors.Is(err, errConfigVarEmptyName) { // TODO: check with error variable
-					break
+			vars := []configVar{}
+			defer func() {
+				if len(vars) == 0 {
+					output.PrintError("No variables have been added")
+					return
 				}
-				output.PrintError(err.Error())
-				continue
+
+				makeConfig(vars)
+			}()
+
+			for {
+				v, err := readConfigVar()
+				if err != nil {
+					if errors.Is(err, errConfigVarEmptyName) { // TODO: check with error variable
+						break
+					}
+					output.PrintError(err.Error())
+					continue
+				}
+
+				fmt.Printf("OK! Name: %s, type: %s\n\n", v.Name, v.Type)
+				vars = append(vars, v)
 			}
 
-			fmt.Printf("OK! Name: %s, type: %s\n\n", v.Name, v.Type)
-			vars = append(vars, v)
-		}
-
-		return nil
-	},
+			return nil
+		},
+	}
 }
 
 // readConfigVar reads the config variable from the user
