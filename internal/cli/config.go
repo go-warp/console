@@ -18,6 +18,13 @@ const (
 	pathToEnvFile = ".env"
 	// pathToConfigFile is a path to the config.go file
 	pathToConfigFile = "config.go"
+
+	// configVarTypeString is a string type of the config variable
+	configVarTypeString = "string"
+	// configVarTypeInt is an int type of the config variable
+	configVarTypeInt = "int"
+	// configVarTypeBool is a bool type of the config variable explained
+	configVarTypeBool = "bool"
 )
 
 var (
@@ -29,6 +36,7 @@ var (
 type configVar struct {
 	Name    string      // Name of the config variable thar will be used in the code
 	EnvName string      // Name of the environment variable that will be stored in the .env file
+	Usage   string      // Usage of the config variable. Will be used in getter func comment
 	Type    string      // Type of the config variable
 	Value   interface{} // Current value of the config variable
 }
@@ -46,7 +54,7 @@ var configCmd = &cobra.Command{
 				return
 			}
 
-			processVars(vars)
+			makeConfig(vars)
 		}()
 
 		for {
@@ -75,7 +83,10 @@ func readConfigVar() (configVar, error) {
 		return configVar{}, errConfigVarEmptyName
 	}
 
-	question = fmt.Sprintf("Specify the env type %s:", colorize.Red("[string, int, bool]"))
+	question = fmt.Sprintf(
+		"Specify the env type [%s, %s, %s]:",
+		configVarTypeString, configVarTypeInt, configVarTypeBool,
+	)
 	envType := input.ReadString(question)
 	if !isEnvTypeValid(envType) {
 		return configVar{}, errConfigVarInvalidType
@@ -101,7 +112,7 @@ func isEnvTypeValid(envType string) bool {
 	}
 }
 
-func processVars(vars []configVar) error {
+func makeConfig(vars []configVar) error {
 	if err := makeEnvFile(vars); err != nil {
 		return err
 	}
@@ -170,19 +181,19 @@ func makeGoConfigFile(vars []configVar) error {
 	sb.WriteString("\n")
 	for _, v := range vars {
 		switch v.Type {
-		case "string":
+		case configVarTypeString:
 			s := fmt.Sprintf(
 				"\tc.%s = os.Getenv(\"%s\")\n",
 				stringsHelper.ToCamelCase(v.Name), v.Name,
 			)
 			sb.WriteString(s)
-		case "int":
+		case configVarTypeInt:
 			s := fmt.Sprintf(
 				"\tc.%s, _ = strconv.Atoi(os.Getenv(\"%s\"))\n",
 				stringsHelper.ToCamelCase(v.Name), v.Name,
 			)
 			sb.WriteString(s)
-		case "bool":
+		case configVarTypeBool:
 			s := fmt.Sprintf(
 				"\tc.%s, _ = strconv.ParseBool(os.Getenv(\"%s\"))\n",
 				stringsHelper.ToCamelCase(v.Name), v.Name,
