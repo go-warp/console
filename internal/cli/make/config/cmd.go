@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	gofile "github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/gofile"
 	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/input"
 	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output"
 	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output/colorize"
@@ -41,10 +42,10 @@ type configVar struct {
 	Value   interface{} // Current value of the config variable
 }
 
-// configCmd is a command that is used to configure the Warp
-var configCmd = &cobra.Command{
-	Use:   "config",
-	Short: "Print the config of Warp",
+// Cmd is a command that is used to configure the Warp
+var Cmd = &cobra.Command{
+	Use:   "make:config",
+	Short: "Make an env config file and its Go representation for the project.",
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		vars := []configVar{}
@@ -150,9 +151,6 @@ func makeEnvFile(vars []configVar) error {
 func makeGoConfigFile(vars []configVar) error {
 	sb := strings.Builder{}
 
-	// Set the disclaimer
-	sb.WriteString(disclaimer())
-
 	// Package
 	sb.WriteString("package config\n\n")
 
@@ -231,7 +229,7 @@ func makeGoConfigFile(vars []configVar) error {
 		colorize.Cyan(pathToConfigFile),
 	)
 
-	if err := fixGoImports(pathToConfigFile); err != nil {
+	if err := gofile.FixGoimports(pathToConfigFile); err != nil {
 		output.PrintError("failed to fix go imports")
 	}
 
