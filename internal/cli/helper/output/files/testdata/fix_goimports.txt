@@ -1,0 +1,9 @@
+package testdata
+
+import (
+	"strings"
+)
+
+func doNothing() {
+	return nil
+}

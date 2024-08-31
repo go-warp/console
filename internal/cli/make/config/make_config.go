@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	gofile "github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/gofile"
 	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output"
 	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output/colorize"
+	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output/files"
 	stringsHelper "github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/strings"
 )
 
@@ -41,7 +41,7 @@ func makeEnvFile(path string, vars []variable) error {
 	}
 
 	// Create the file
-	err := output.MakeFile(path, []byte(sb.String()))
+	err := files.Create(path, []byte(sb.String()))
 	if err != nil {
 		return err
 	}
@@ -125,7 +125,7 @@ func makeGoConfigFile(path string, vars []variable) error {
 	}
 
 	// Create the file
-	err := output.MakeFile(path, []byte(sb.String()))
+	err := files.Create(path, []byte(sb.String()))
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func makeGoConfigFile(path string, vars []variable) error {
 		colorize.Cyan(path),
 	)
 
-	if err := gofile.FixGoimports(path); err != nil {
+	if err := files.FixGoimports(path); err != nil {
 		output.PrintError("failed to fix go imports")
 	}
 

@@ -1,4 +1,4 @@
-package config
+package files
 
 import (
 	"os"
@@ -9,11 +9,11 @@ import (
 
 const testdataDir = "testdata/"
 
-func Test_makeEnvFile(t *testing.T) {
+func TestCreate(t *testing.T) {
 	// Test creates files, so we can't run it in parallel
 	type args struct {
-		path string
-		vars []variable
+		path    string
+		content []byte
 	}
 	tests := []struct {
 		name          string
@@ -24,32 +24,24 @@ func Test_makeEnvFile(t *testing.T) {
 		{
 			name: "ok",
 			args: args{
-				path: testdataDir + ".env",
-				vars: []variable{
-					{
-						Name:  "foo",
-						Type:  variableTypeString,
-						Value: "bar",
-					},
-				},
+				path:    testdataDir + "create.txt",
+				content: []byte("Hello, World!\n"),
 			},
-			fileToCompare: testdataDir + "env_expected.txt",
+			fileToCompare: testdataDir + "create_expected.txt",
 			wantErr:       false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := makeEnvFile(tt.args.path, tt.args.vars)
+			err := Create(tt.args.path, tt.args.content)
+			defer os.Remove(tt.args.path) // Clean up
 
 			if tt.wantErr {
 				require.Error(t, err)
 				return
 			}
-			defer os.Remove(tt.args.path) // Clean up
 
 			require.NoError(t, err)
-			require.FileExists(t, tt.args.path)
-
 			// Compare the files
 			bbGot, err := os.ReadFile(tt.args.path)
 			require.NoError(t, err)
@@ -60,52 +52,50 @@ func Test_makeEnvFile(t *testing.T) {
 	}
 }
 
-func Test_makeGoConfigFile(t *testing.T) {
-	// Test creates files, so we can't run it in parallel
+func TestFixGoimports(t *testing.T) {
 	type args struct {
 		path string
-		vars []variable
 	}
 	tests := []struct {
 		name          string
 		args          args
 		fileToCompare string
+		fileToCopy    string
 		wantErr       bool
 	}{
 		{
-			name: "ok to exists dir",
+			name: "ok",
 			args: args{
-				path: testdataDir + "config.go",
-				vars: []variable{
-					{
-						Name:  "FOO",
-						Type:  variableTypeString,
-						Value: "bar",
-					},
-				},
+				path: testdataDir + "fix_goimports.go",
 			},
-			fileToCompare: testdataDir + "config_go_expected.txt",
+			fileToCompare: testdataDir + "fix_goimports_expected.txt",
+			fileToCopy:    testdataDir + "fix_goimports.txt",
 			wantErr:       false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := makeGoConfigFile(tt.args.path, tt.args.vars)
+			// Create the file to work with
+			bb, err := os.ReadFile(tt.fileToCompare)
+			require.NoError(t, err)
+			err = os.WriteFile(tt.args.path, bb, 0644)
+			require.NoError(t, err)
+			defer os.Remove(tt.args.path) // Clean up
+
+			// Call the function we want to test
+			err = FixGoimports(tt.args.path)
 
 			if tt.wantErr {
 				require.Error(t, err)
 				return
 			}
-			defer os.Remove(tt.args.path) // Clean up
-
 			require.NoError(t, err)
-			require.FileExists(t, tt.args.path)
-
 			// Compare the files
-			bbGot, err := os.ReadFile(tt.args.path)
-			require.NoError(t, err)
 			bbWant, err := os.ReadFile(tt.fileToCompare)
 			require.NoError(t, err)
+			bbGot, err := os.ReadFile(tt.args.path)
+			require.NoError(t, err)
+
 			require.Equal(t, bbWant, bbGot)
 		})
 	}
