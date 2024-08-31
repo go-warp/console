@@ -10,6 +10,13 @@ import (
 	stringsHelper "github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/strings"
 )
 
+const (
+	// pathToEnvFile is a path to the .env file
+	pathToEnvFile = ".env"
+	// pathToConfigFile is a path to the config.go file
+	pathToConfigFile = "config.go"
+)
+
 // makeConfig creates config files with the specified variables
 func makeConfig(vars []variable) error {
 	if err := makeEnvFile(vars); err != nil {

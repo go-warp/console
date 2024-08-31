@@ -9,20 +9,6 @@ import (
 	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output"
 )
 
-const (
-	// pathToEnvFile is a path to the .env file
-	pathToEnvFile = ".env"
-	// pathToConfigFile is a path to the config.go file
-	pathToConfigFile = "config.go"
-
-	// variableTypeString is a string type of the config variable
-	variableTypeString = "string"
-	// variableTypeInt is an int type of the config variable
-	variableTypeInt = "int"
-	// variableTypeBool is a bool type of the config variable explained
-	variableTypeBool = "bool"
-)
-
 var (
 	errvariableEmptyName   = errors.New("empty config var name")
 	errvariableInvalidType = errors.New("invalid config var type")

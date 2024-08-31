@@ -6,6 +6,15 @@ import (
 	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/input"
 )
 
+const (
+	// variableTypeString is a string type of the config variable
+	variableTypeString = "string"
+	// variableTypeInt is an int type of the config variable
+	variableTypeInt = "int"
+	// variableTypeBool is a bool type of the config variable explained
+	variableTypeBool = "bool"
+)
+
 // variable is a struct that represents a config variable
 type variable struct {
 	Name    string      // Name of the config variable thar will be used in the code
@@ -48,7 +57,9 @@ func readVariable() (variable, error) {
 // isEnvTypeValid checks if the env type is valid
 func isEnvTypeValid(envType string) bool {
 	switch envType {
-	case "string", "int", "bool":
+	case variableTypeString,
+		variableTypeInt,
+		variableTypeBool:
 		return true
 	default:
 		return false
