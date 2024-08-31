@@ -14,15 +14,16 @@ const (
 	// pathToEnvFile is a path to the .env file
 	pathToEnvFile = ".env"
 	// pathToConfigFile is a path to the config.go file
-	pathToConfigFile = "config.go"
+	pathToConfigFile = "internal/config/__config.go" // TODO: Change this to the correct path
 )
 
 // makeConfig creates config files with the specified variables
 func makeConfig(vars []variable) error {
-	if err := makeEnvFile(vars); err != nil {
+	// TODO: think how to test this method properly
+	if err := makeEnvFile(pathToEnvFile, vars); err != nil {
 		return err
 	}
-	if err := makeGoConfigFile(vars); err != nil {
+	if err := makeGoConfigFile(pathToConfigFile, vars); err != nil {
 		return err
 	}
 
@@ -30,7 +31,7 @@ func makeConfig(vars []variable) error {
 }
 
 // makeEnvFile creates the .env file with the specified variables
-func makeEnvFile(vars []variable) error {
+func makeEnvFile(path string, vars []variable) error {
 	sb := strings.Builder{}
 
 	// Add the variables
@@ -40,20 +41,20 @@ func makeEnvFile(vars []variable) error {
 	}
 
 	// Create the file
-	err := output.MakeFile(pathToEnvFile, []byte(sb.String()))
+	err := output.MakeFile(path, []byte(sb.String()))
 	if err != nil {
 		return err
 	}
 
 	fmt.Printf(
 		"Created file %s\n",
-		colorize.Cyan(pathToEnvFile),
+		colorize.Cyan(path),
 	)
 	return nil
 }
 
 // makeGoConfigFile creates the config.go file with the specified variables
-func makeGoConfigFile(vars []variable) error {
+func makeGoConfigFile(path string, vars []variable) error {
 	sb := strings.Builder{}
 
 	// Package
@@ -124,17 +125,17 @@ func makeGoConfigFile(vars []variable) error {
 	}
 
 	// Create the file
-	err := output.MakeFile(pathToConfigFile, []byte(sb.String()))
+	err := output.MakeFile(path, []byte(sb.String()))
 	if err != nil {
 		return err
 	}
 
 	fmt.Printf(
 		"Created file %s\n",
-		colorize.Cyan(pathToConfigFile),
+		colorize.Cyan(path),
 	)
 
-	if err := gofile.FixGoimports(pathToConfigFile); err != nil {
+	if err := gofile.FixGoimports(path); err != nil {
 		output.PrintError("failed to fix go imports")
 	}
 

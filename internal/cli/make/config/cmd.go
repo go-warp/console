@@ -31,7 +31,9 @@ func run(cmd *cobra.Command, args []string) error {
 			return
 		}
 
-		makeConfig(vars)
+		if err := makeConfig(vars); err != nil {
+			output.PrintError(err.Error())
+		}
 	}()
 
 	for {
