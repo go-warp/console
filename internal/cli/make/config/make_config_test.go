@@ -78,9 +78,8 @@ func Test_makeGoConfigFile(t *testing.T) {
 				path: testdataDir + "config.go",
 				vars: []variable{
 					{
-						Name:  "FOO",
-						Type:  variableTypeString,
-						Value: "bar",
+						Name: "FOO_BAR",
+						Type: variableTypeString,
 					},
 				},
 			},

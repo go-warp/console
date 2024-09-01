@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/sitnikovik/stringo"
+
 	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output"
 	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output/colorize"
 	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output/files"
-	stringsHelper "github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/strings"
 )
 
 const (
@@ -72,7 +73,7 @@ func makeGoConfigFile(path string, vars []variable) error {
 	for _, v := range vars {
 		s := fmt.Sprintf(
 			"\t%s %s\n",
-			stringsHelper.ToCamelCase(v.Name), v.Type,
+			stringo.ToCamelCase(v.Name), v.Type,
 		)
 		sb.WriteString(s)
 	}
@@ -88,19 +89,19 @@ func makeGoConfigFile(path string, vars []variable) error {
 		case variableTypeString:
 			s := fmt.Sprintf(
 				"\tc.%s = os.Getenv(\"%s\")\n",
-				stringsHelper.ToCamelCase(v.Name), v.Name,
+				stringo.ToCamelCase(v.Name), v.Name,
 			)
 			sb.WriteString(s)
 		case variableTypeInt:
 			s := fmt.Sprintf(
 				"\tc.%s, _ = strconv.Atoi(os.Getenv(\"%s\"))\n",
-				stringsHelper.ToCamelCase(v.Name), v.Name,
+				stringo.ToCamelCase(v.Name), v.Name,
 			)
 			sb.WriteString(s)
 		case variableTypeBool:
 			s := fmt.Sprintf(
 				"\tc.%s, _ = strconv.ParseBool(os.Getenv(\"%s\"))\n",
-				stringsHelper.ToCamelCase(v.Name), v.Name,
+				stringo.ToCamelCase(v.Name), v.Name,
 			)
 			sb.WriteString(s)
 		}
@@ -111,15 +112,19 @@ func makeGoConfigFile(path string, vars []variable) error {
 
 	// Getters
 	for _, v := range vars {
+		// TODO: refactore it in stringo package
+		pascalCase := stringo.ToPascalCase(strings.ToLower(v.Name))
 		s := fmt.Sprintf(
 			"\n// %s returns the %s value\n",
-			stringsHelper.ToPascalCase(v.Name), v.Name,
+			pascalCase, v.Name,
 		)
 		sb.WriteString(s)
 
 		s = fmt.Sprintf(
 			"func (c *Config) %s() %s {\n\treturn c.%s\n}\n",
-			stringsHelper.ToPascalCase(v.Name), v.Type, stringsHelper.ToCamelCase(v.Name),
+			pascalCase,
+			v.Type,
+			stringo.ToCamelCase(v.Name),
 		)
 		sb.WriteString(s)
 	}

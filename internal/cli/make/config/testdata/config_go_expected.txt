@@ -6,19 +6,19 @@ import (
 
 // Config is a struct that represents the configuration
 type Config struct {
-	foo string
+	fooBar string
 }
 
 // NewConfig creates a new Config instance
 func NewConfig() *Config {
 	c := &Config{}
 
-	c.foo = os.Getenv("FOO")
+	c.fooBar = os.Getenv("FOO_BAR")
 
 	return c
 }
 
-// Foo returns the FOO value
-func (c *Config) Foo() string {
-	return c.foo
+// FooBar returns the FOO_BAR value
+func (c *Config) FooBar() string {
+	return c.fooBar
 }
