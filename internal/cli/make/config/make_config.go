@@ -15,7 +15,7 @@ const (
 	// pathToEnvFile is a path to the .env file
 	pathToEnvFile = ".env"
 	// pathToConfigFile is a path to the config.go file
-	pathToConfigFile = "internal/config/__config.go" // TODO: Change this to the correct path
+	pathToConfigFile = "internal/config/config.go"
 )
 
 // makeConfig creates config files with the specified variables
