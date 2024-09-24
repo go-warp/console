@@ -17,7 +17,7 @@ require (
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.33.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/sitnikovik/stringo v0.0.0-20240901113007-23e4b38ce4f8 // indirect
+	github.com/sitnikovik/stringo v0.1.1 // indirect
 	github.com/spf13/cobra v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
