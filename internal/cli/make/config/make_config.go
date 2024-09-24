@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sitnikovik/stringo"
+	"github.com/sitnikovik/stringo/cases"
 
 	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output"
 	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output/colorize"
@@ -65,7 +65,16 @@ func makeGoConfigFile(path string, vars []variable) error {
 	sb.WriteString("import (\n")
 	sb.WriteString("\t\"os\"\n")
 	sb.WriteString("\t\"strconv\"\n")
+	sb.WriteString("\n")
+	sb.WriteString("\t\"github.com/joho/godotenv\"\n")
 	sb.WriteString(")\n\n")
+
+	// Init
+	sb.WriteString("\n")
+	sb.WriteString("// Init initializes the configuration\n")
+	sb.WriteString("func Init(_ context.Context) error {\n")
+	sb.WriteString("\treturn godotenv.Load(\".env\")\n")
+	sb.WriteString("}\n")
 
 	// Config struct
 	sb.WriteString("// Config is a struct that represents the configuration\n")
@@ -73,7 +82,7 @@ func makeGoConfigFile(path string, vars []variable) error {
 	for _, v := range vars {
 		s := fmt.Sprintf(
 			"\t%s %s\n",
-			stringo.ToCamelCase(v.Name), v.Type,
+			cases.ToCamelCase(v.Name), v.Type,
 		)
 		sb.WriteString(s)
 	}
@@ -89,19 +98,19 @@ func makeGoConfigFile(path string, vars []variable) error {
 		case variableTypeString:
 			s := fmt.Sprintf(
 				"\tc.%s = os.Getenv(\"%s\")\n",
-				stringo.ToCamelCase(v.Name), v.Name,
+				cases.ToCamelCase(v.Name), v.Name,
 			)
 			sb.WriteString(s)
 		case variableTypeInt:
 			s := fmt.Sprintf(
 				"\tc.%s, _ = strconv.Atoi(os.Getenv(\"%s\"))\n",
-				stringo.ToCamelCase(v.Name), v.Name,
+				cases.ToCamelCase(v.Name), v.Name,
 			)
 			sb.WriteString(s)
 		case variableTypeBool:
 			s := fmt.Sprintf(
 				"\tc.%s, _ = strconv.ParseBool(os.Getenv(\"%s\"))\n",
-				stringo.ToCamelCase(v.Name), v.Name,
+				cases.ToCamelCase(v.Name), v.Name,
 			)
 			sb.WriteString(s)
 		}
@@ -112,8 +121,7 @@ func makeGoConfigFile(path string, vars []variable) error {
 
 	// Getters
 	for _, v := range vars {
-		// TODO: refactore it in stringo package
-		pascalCase := stringo.ToPascalCase(strings.ToLower(v.Name))
+		pascalCase := cases.ToPascalCase(v.Name)
 		s := fmt.Sprintf(
 			"\n// %s returns the %s value\n",
 			pascalCase, v.Name,
@@ -124,7 +132,7 @@ func makeGoConfigFile(path string, vars []variable) error {
 			"func (c *Config) %s() %s {\n\treturn c.%s\n}\n",
 			pascalCase,
 			v.Type,
-			stringo.ToCamelCase(v.Name),
+			cases.ToCamelCase(v.Name),
 		)
 		sb.WriteString(s)
 	}

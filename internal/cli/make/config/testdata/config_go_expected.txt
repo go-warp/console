@@ -1,8 +1,16 @@
 package config
 
 import (
+	"context"
 	"os"
+
+	"github.com/joho/godotenv"
 )
+
+// Init initializes the configuration
+func Init(_ context.Context) error {
+	return godotenv.Load(".env")
+}
 
 // Config is a struct that represents the configuration
 type Config struct {
