@@ -1,6 +1,10 @@
 .idea/
+.vscode/
 bin/
 tmp/
+.obsidian/
+
+.DS_Store
 
 .env
 config.yaml

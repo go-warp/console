@@ -4,12 +4,18 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+
+	makeconfig "github.com/sitnikovik/go-grpc-api-template/internal/cli/make/config"
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "warp",
 	Short: "Warp is a CLI tool to build your gRPC API service quickly",
 	RunE:  root,
+}
+
+func init() {
+	rootCmd.AddCommand(makeconfig.NewCommand())
 }
 
 func Execute() {

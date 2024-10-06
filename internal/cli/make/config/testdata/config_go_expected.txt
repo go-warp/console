@@ -1,0 +1,32 @@
+package config
+
+import (
+	"context"
+	"os"
+
+	"github.com/joho/godotenv"
+)
+
+// Init initializes the configuration
+func Init(_ context.Context) error {
+	return godotenv.Load(".env")
+}
+
+// Config is a struct that represents the configuration
+type Config struct {
+	fooBar string
+}
+
+// NewConfig creates a new Config instance
+func NewConfig() *Config {
+	c := &Config{}
+
+	c.fooBar = os.Getenv("FOO_BAR")
+
+	return c
+}
+
+// FooBar returns the FOO_BAR value
+func (c *Config) FooBar() string {
+	return c.fooBar
+}
