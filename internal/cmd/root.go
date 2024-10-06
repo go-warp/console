@@ -5,8 +5,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	initcmd "github.com/sitnikovik/go-grpc-api-template/internal/cli/init"
-	makeconfig "github.com/sitnikovik/go-grpc-api-template/internal/cli/make/config"
+	initcmd "github.com/go-warp/console/internal/cmd/init"
+	makeconfig "github.com/go-warp/console/internal/cmd/make/config"
 )
 
 var rootCmd = &cobra.Command{

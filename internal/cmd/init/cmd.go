@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	boilerplaceRepoUrl = "https://github.com/go-warp/warp-boilerplate/archive/refs/heads/master.zip"
+	boilerplaceRepoUrl = "https://github.com/go-warp/console-boilerplate/archive/refs/heads/master.zip"
 	tmpZipFile         = "/tmp/sitnikovik-warp-boilerplate.zip"
 	defaultDestination = "."
 )

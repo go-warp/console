@@ -3,7 +3,7 @@ package output
 import (
 	"fmt"
 
-	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output/colorize"
+	"github.com/go-warp/console/internal/cli/output/colorize"
 )
 
 // PrintError prints an error message to the console

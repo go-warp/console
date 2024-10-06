@@ -3,7 +3,7 @@ package init
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/input"
+	"github.com/go-warp/console/internal/cli/input"
 )
 
 type config struct {
