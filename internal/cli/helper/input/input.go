@@ -1,6 +1,10 @@
 package input
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/spf13/cobra"
+)
 
 // ReadString reads a string from the user
 func ReadString(question string) string {
@@ -10,4 +14,14 @@ func ReadString(question string) string {
 	fmt.Scanln(&input)
 
 	return input
+}
+
+// GetCmdFlag parse command flags and returns value specified with name
+func GetCmdFlag(cmd *cobra.Command, name string) string {
+	f := cmd.Flag(name)
+	if f == nil {
+		return ""
+	}
+
+	return f.Value.String()
 }
