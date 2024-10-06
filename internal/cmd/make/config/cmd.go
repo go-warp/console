@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output"
+	"github.com/go-warp/console/internal/cli/output"
 )
 
 var (

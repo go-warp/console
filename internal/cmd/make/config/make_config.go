@@ -6,9 +6,9 @@ import (
 
 	"github.com/sitnikovik/stringo/cases"
 
-	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output"
-	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output/colorize"
-	"github.com/sitnikovik/go-grpc-api-template/internal/cli/helper/output/files"
+	"github.com/go-warp/console/internal/cli/output"
+	"github.com/go-warp/console/internal/cli/output/colorize"
+	"github.com/go-warp/console/internal/cli/output/files"
 )
 
 const (

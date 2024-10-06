@@ -1,7 +1,7 @@
 package main
 
-import "github.com/sitnikovik/go-grpc-api-template/internal/cli"
+import cmd "github.com/go-warp/console/internal/cmd"
 
 func main() {
-	cli.Execute()
+	cmd.Execute()
 }
